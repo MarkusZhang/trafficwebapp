@@ -1,0 +1,40 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jun 14, 2016, 3:52:20 PM
+    Author     : neoye
+*/
+
+/*
+start of legend customizations
+*/
+.legendBox {
+    position: absolute; 
+    z-index: 100; 
+    min-width: 250px; 
+    background: white; 
+    opacity: 0.8;
+    font-size: 15px;
+}
+
+.legendBox #messageLegend {
+    list-style-type: none;
+    padding-left: 5px;
+}
+
+.legendBox #messageLegend a {
+    color: black;
+}
+
+#menu {
+    position: absolute;
+    background: #fff;
+    padding: 10px;
+    font-family: 'Open Sans', sans-serif;
+}
+/*
+end of legend customizations
+*/

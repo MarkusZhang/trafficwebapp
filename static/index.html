@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+        <title>Transportation Data Visualization</title>
+        <style>
+            [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+              display: none !important;
+            }
+        </style>
+        <!-- customized CSS-->
+        <link rel="stylesheet" href="/static/css/customizations.css">
+        <!-- CSS for bootstrap-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/css/simple-sidebar.css">
+        <link href='https://api.mapbox.com/mapbox-gl-js/v0.35.1/mapbox-gl.css' rel='stylesheet' />
+        <!--<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />-->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/static/css/jquery-ui-slider-pips.css">
+    </head>
+<!--    <body onload="onLoadfunctions()" ng-app="mapApp">-->
+    <body ng-app="mapApp" class="ng-cloak">
+        <div id="wrapper" ng-controller="mapCtrl as vm">
+
+            <!-- Sidebar -->
+            <div id="sidebar-wrapper" style="background-color: black;;">
+
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default" style="margin-top: 10px; margin-left: 5px; border-color: black;">
+                        <div class="panel-heading" style="background-color: black;">
+                            <span style="color: white; font-size: 25px;">
+                                Traffic data visualization
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- navigation for map -->
+                    <div class="panel panel-default" ng-show="vm.isTesting">
+                        <div class="panel-heading">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2" 
+                               style="color: black; text-decoration: none; font-size: 18px;">
+                                Load data
+                            </a>
+                        </div>
+
+                        <div id="collapse2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul style="list-style-type: none; padding-left: 0px;">
+                                    <textarea name="inputData" id="inputData" cols="30" rows="10"></textarea>
+                                    <a href="#" class="btn btn-default" id="loadInputData" ng-click="vm.loadInputMessage()">Load Message</a>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- navigation for traffic -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a id="trafficAccordion" data-toggle="collapse" data-parent="#accordion" href="#collapse6"
+                               style="color: black; text-decoration: none; font-size: 18px;">
+                                Info
+                            </a>
+                        </div>
+
+                        <div id="collapse6" class="panel-collapse">
+                            <div class="panel-body">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif" alt="loading" style="width:70px;height:50px" ng-show="vm.isLoading">
+                                <span ng-show="vm.isLoading && vm.loadingMsg">{{ vm.loadingMsg }}</span>
+                                <ul id="trafficContent" style="list-style-type: none; padding-left: 0px;">
+                                    <h5 ng-show="selected_time_for_display != null">
+                                        <strong>Selected Time:</strong> <br><br>
+                                        {{ selected_time_for_display }}
+                                    </h5>
+
+                                    <h4 ng-show="!vm.cur_location_name && !vm.road_seg_info">
+                                        Click on the map to view road information
+                                    </h4>
+
+                                    <h5 ng-show="vm.cur_location_name">
+                                        <strong>Point Info:</strong>
+                                    </h5>
+
+                                    <div class="panel panel-default" ng-show="vm.cur_location_name">
+                                      <div class="panel-body">{{ vm.cur_location_name }}</div>
+                                    </div>
+
+                                    <p class="clearfix"></p>
+                                    <h5 ng-show="vm.road_seg_info">
+                                        <strong>Road Segment Info:</strong>
+                                    </h5>
+
+
+                                    <table class="table" ng-repeat="info in vm.road_seg_info">
+                                        <tbody>
+                                        <tr> <th scope="row">Name</th> <td>{{ info.name }}</td></tr>
+                                        <tr> <th scope="row">Towards</th> <td>{{ info.orientation }}</td></tr>
+                                        <tr> <th scope="row">Category</th> <td>{{ info.category }}</td></tr>
+                                        <tr> <th scope="row">Speed</th> <td>{{ info.speed }}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div><!-- end of accordion -->
+            </div><!-- end of sidebar-wrapper -->
+
+            <!-- Page Content -->
+            <div id="page-content-wrapper">
+
+
+                <form class="form-inline">
+                    <button class="btn btn-default" id="mapReset" ng-click="vm.resetMap();">Reset Map</button>
+                    <div class="checkbox">
+                        <label>
+                          <input type="checkbox" ng-model="showTraffic" id="showTrafficCheckbox"> Show Traffic
+                        </label>
+                    </div>
+
+
+                    <!--<div class="checkbox">
+                        <label>
+                          <input type="checkbox" ng-model="showRoadNetwork"> Show Road Network
+                        </label>
+                    </div>
+                    -->
+
+                    <div class="checkbox">
+                        <label>
+                          <input type="checkbox" ng-model="showMessage" id="showMessageCheckbox"> Show Message
+                        </label>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                          <input type="checkbox" ng-model="showHeatmap" id="showHeatmapCheckbox"> Show Heatmap
+                        </label>
+                    </div>
+
+                    <ul class="nav navbar-nav pull-right">
+                        <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" style="padding-top: 7px;padding-bottom: 5px" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Map Style <span class="caret"></span></a>
+                          <ul class="dropdown-menu">
+                            <li><a href="#" ng-click="vm.setMapStyle('basic')">basic <span ng-show="vm.mapStyle=='basic'">&#10004;</span></a></li>
+                            <li><a href="#" ng-click="vm.setMapStyle('streets')">streets<span ng-show="vm.mapStyle=='streets'">&#10004;</span></a></li>
+                            <li><a href="#" ng-click="vm.setMapStyle('bright')">bright<span ng-show="vm.mapStyle=='bright'">&#10004;</span></a></li>
+                            <li><a href="#" ng-click="vm.setMapStyle('light')">light<span ng-show="vm.mapStyle=='light'">&#10004;</span></a></li>
+                            <li><a href="#" ng-click="vm.setMapStyle('dark')">dark<span ng-show="vm.mapStyle=='dark'">&#10004;</span></a></li>
+                              <li><a href="#" ng-click="vm.setMapStyle('satellite')">satellite<span ng-show="vm.mapStyle=='satellite'">&#10004;</span></a></li>
+                          </ul>
+                        </li>
+                    </ul>
+                </form>
+                <p class="clearfix"></p>
+                <!-- start of map functions -->
+                <div id='map' style="">
+                </div>
+                <p class="clearfix"></p>
+                <div ng-include="'traffic-select.html'" ng-controller="timeSelectCtrl as ctrl"></div>
+
+            </div>
+        </div>
+        <!-- jquery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <!--    angular js -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+        <script src="/static/js/app.js"></script>
+        <script src="/static/js/configs.js"></script>
+        <script src="/static/js/controllers/timeSelectCtrl.js"></script>
+        <script src="/static/js/services/urlService.js"></script>
+        <script src="/static/js/services/trafficService.js"></script>
+        <script src="/static/js/services/heatmapService.js"></script>
+        <script src="/static/js/services/messageService.js"></script>
+        <script src="/static/js/services/slicingService.js"></script>
+        <script src="/static/js/services/msgSlicingService.js"></script>
+        <script src="/static/js/services/ctrlMsgService.js"></script>
+        <!-- JavaScript for bootstrap -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- online script -->
+        <script src='https://api.mapbox.com/mapbox-gl-js/v0.35.1/mapbox-gl.js'></script>
+        <!-- jquery-ui -->
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="/static/js/external/jquery-ui-slider-pips.js"></script>
+
+    </body>
+</html>

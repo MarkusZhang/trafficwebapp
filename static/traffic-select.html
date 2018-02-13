@@ -1,0 +1,78 @@
+<div ng-show="ctrl.select_mode=='history'">
+    <div class="center-block" ng-show="ctrl.history_traffic_time && ctrl.history_traffic_time.times">
+        <ul class="pagination" style="display: block;width:50%;margin: auto">
+        <li>
+          <a href="#" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        <li ng-repeat="time in ctrl.history_traffic_time.times" ng-class="(time==ctrl.history_traffic_time.selected_time)?'active':'normal'"><a href="#" value="{{ time }}" ng-click="ctrl.selectHistoryTraffic(time)">{{ time }}</a></li>
+        <li>
+          <a href="#" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+    </ul>
+    </div>
+    <p class="clearfix"></p>
+
+    <div style="width: 100%;" ng-show="ctrl.history_traffic_time">
+        <form class="form-inline" style="margin: auto;width: 50%">
+      <div class="form-group">
+        <label for="year">Year</label>
+         <select name="year" id="traffic_year" class="form-control" ng-click="ctrl.trafficYearChanged()">
+             <option ng-repeat="year in ctrl.history_traffic_time.years" value="{{ year }}">{{ year }}</option>
+         </select>
+      </div>
+      <div class="form-group">
+        <label for="month">Month</label>
+         <select name="month" id="traffic_month" class="form-control" ng-click="ctrl.trafficMonthChanged()">
+             <option ng-repeat="month in ctrl.history_traffic_time.months" value="{{ month }}">{{ month }}</option>
+         </select>
+      </div>
+        <div class="form-group">
+        <label for="day">Day</label>
+         <select name="day" id="traffic_day" class="form-control" ng-click="ctrl.trafficDayChanged()">
+             <option ng-repeat="day in ctrl.history_traffic_time.days" value="{{ day }}">{{ day }}</option>
+         </select>
+      </div>
+        <button class="btn btn-default" style="margin-left:30px" ng-click="ctrl.switchMode('typical')">Switch to typical</button>
+    </form>
+    </div>
+</div>
+
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------------------------------------------- -->
+
+<div id="slider" ng-show="ctrl.select_mode=='typical'"></div>
+<p class="clearfix"></p>
+<p class="clearfix"></p>
+<div class="container">
+    <div class="row" ng-show="ctrl.select_mode=='typical'">
+        <div class="col"></div>
+        <div class="col-10">
+            <!--<div class="controlgroup" style="width: 70%;display:block;margin-left: auto;margin-right: auto" >-->
+            <div class="controlgroup" style="width:80%;display:block;margin-left: auto;margin-right: auto">
+                <label for="sunday">Sun</label>
+                <input type="radio" name="day-select" id="sunday" checked ng-click="ctrl.typicalDayChanged()">
+                <label for="monday">Mon</label>
+                <input type="radio" name="day-select" id="monday" ng-click="ctrl.typicalDayChanged()">
+                <label for="tuesday">Tues</label>
+                <input type="radio" name="day-select" id="tuesday" ng-click="ctrl.typicalDayChanged()">
+                <label for="wednesday">Wed</label>
+                <input type="radio" name="day-select" id="wednesday" ng-click="ctrl.typicalDayChanged()">
+                <label for="thursday">Thur</label>
+                <input type="radio" name="day-select" id="thursday" ng-click="ctrl.typicalDayChanged()">
+                <label for="friday">Fri</label>
+                <input type="radio" name="day-select" id="friday" ng-click="ctrl.typicalDayChanged()">
+                <label for="saturday">Sat</label>
+                <input type="radio" name="day-select" id="saturday" ng-click="ctrl.typicalDayChanged()">
+                <span class="label label-default" id="timeindex" style="margin-left: 10px;font-size: medium"></span>
+                <button class="btn btn-success" style="margin-left:30px" ng-click="ctrl.switchMode('history')">Switch to history</button>
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+
+</div>
